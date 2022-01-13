@@ -35,6 +35,8 @@
 /* eslint-disable */
 import escapeHTML from 'escape-html'
 
+import { Type as ShareTypes } from '@nextcloud/sharing'
+
 (function() {
 
 	_.extend(OC.Files.Client, {
@@ -70,7 +72,7 @@ import escapeHTML from 'escape-html'
 		 */
 		attach: function(fileList) {
 			// core sharing is disabled/not loaded
-			if (!OC.Share) {
+			if (!ShareTypes) {
 				return
 			}
 			if (fileList.id === 'trashbin' || fileList.id === 'files.public') {
@@ -164,31 +166,46 @@ import escapeHTML from 'escape-html'
 
 				_.each($files, function(file) {
 					var $tr = $(file)
-					var shareTypes = $tr.attr('data-share-types') || ''
+					var shareTypesStr = $tr.attr('data-share-types') || ''
 					var shareOwner = $tr.attr('data-share-owner')
-					if (shareTypes || shareOwner) {
-						var hasLink = false
-						var hasShares = false
-						_.each(shareTypes.split(',') || [], function(shareType) {
-							shareType = parseInt(shareType, 10)
-							if (shareType === OC.Share.SHARE_TYPE_LINK) {
-								hasLink = true
-							} else if (shareType === OC.Share.SHARE_TYPE_EMAIL) {
-								hasLink = true
-							} else if (shareType === OC.Share.SHARE_TYPE_USER) {
-								hasShares = true
-							} else if (shareType === OC.Share.SHARE_TYPE_GROUP) {
-								hasShares = true
-							} else if (shareType === OC.Share.SHARE_TYPE_REMOTE) {
-								hasShares = true
-							} else if (shareType === OC.Share.SHARE_TYPE_REMOTE_GROUP) {
-								hasShares = true
-							} else if (shareType === OC.Share.SHARE_TYPE_CIRCLE) {
-								hasShares = true
-							} else if (shareType === OC.Share.SHARE_TYPE_ROOM) {
-								hasShares = true
-							} else if (shareType === OC.Share.SHARE_TYPE_DECK) {
-								hasShares = true
+					if (shareTypesStr || shareOwner) {
+						let hasLink = false
+						let hasShares = false
+						const shareTypesArray = shareTypesStr.split(',') || []
+						shareTypesArray.forEach((shareTypeStr) => {
+							const shareType = parseInt(shareTypeStr, 10)
+
+							switch (shareType) {
+								case ShareTypes.SHARE_TYPE_LINK:
+									hasLink = true
+									break
+								case ShareTypes.SHARE_TYPE_EMAIL:
+									hasLink = true
+									break
+							}
+
+							switch (shareType) {
+								case ShareTypes.SHARE_TYPE_USER:
+									hasShares = true
+									break
+								case ShareTypes.SHARE_TYPE_GROUP:
+									hasShares = true
+									break
+								case ShareTypes.SHARE_TYPE_REMOTE:
+									hasShares = true
+									break
+								case ShareTypes.SHARE_TYPE_REMOTE_GROUP:
+									hasShares = true
+									break
+								case ShareTypes.SHARE_TYPE_CIRCLE:
+									hasShares = true
+									break
+								case ShareTypes.SHARE_TYPE_ROOM:
+									hasShares = true
+									break
+								case ShareTypes.SHARE_TYPE_DECK:
+									hasShares = true
+									break
 							}
 						})
 						OCA.Sharing.Util._updateFileActionIcon($tr, hasShares, hasLink)
@@ -218,8 +235,8 @@ import escapeHTML from 'escape-html'
 				permissions: OC.PERMISSION_ALL,
 				iconClass: function(fileName, context) {
 					var shareType = parseInt(context.$file.data('share-types'), 10)
-					if (shareType === OC.Share.SHARE_TYPE_EMAIL
-						|| shareType === OC.Share.SHARE_TYPE_LINK) {
+					if (shareType === ShareTypes.SHARE_TYPE_EMAIL
+						|| shareType === ShareTypes.SHARE_TYPE_LINK) {
 						return 'icon-public'
 					}
 					return 'icon-shared'

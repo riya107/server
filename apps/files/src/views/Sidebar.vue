@@ -84,6 +84,7 @@ import $ from 'jquery'
 import axios from '@nextcloud/axios'
 import { emit } from '@nextcloud/event-bus'
 import moment from '@nextcloud/moment'
+import ShareTypes from '@nextcloud/sharing'
 
 import AppSidebar from '@nextcloud/vue/dist/Components/AppSidebar'
 import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
@@ -326,8 +327,8 @@ export default {
 				} else if (fileInfo.mountType !== undefined && fileInfo.mountType !== '') {
 					return OC.MimeType.getIconUrl('dir-' + fileInfo.mountType)
 				} else if (fileInfo.shareTypes && (
-					fileInfo.shareTypes.indexOf(OC.Share.SHARE_TYPE_LINK) > -1
-					|| fileInfo.shareTypes.indexOf(OC.Share.SHARE_TYPE_EMAIL) > -1)
+					fileInfo.shareTypes.indexOf(ShareTypes.SHARE_TYPE_LINK) > -1
+					|| fileInfo.shareTypes.indexOf(ShareTypes.SHARE_TYPE_EMAIL) > -1)
 				) {
 					return OC.MimeType.getIconUrl('dir-public')
 				} else if (fileInfo.shareTypes && fileInfo.shareTypes.length > 0) {
